@@ -10,7 +10,7 @@ ax.set_facecolor(palette["face_color"])
 def read_csv(file_name="actors.csv"):
     """Take an actor network csv and read it into a dictionary"""
     with open(file_name) as file:
-        data = file.readlines()[2:]
+        data = file.readlines()[1:]
 
     nodes = []
     for line in data:
