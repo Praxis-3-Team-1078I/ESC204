@@ -12,7 +12,7 @@
 float readHum()
 {
     uint8_t hum_tot;
-    i2c_read_blocking(i2c_default, HUM_HIGH, &hum_tot, 16, true);
+    i2c_read_blocking(i2c_default, HUM_HIGH, &hum_tot, 2, true);
 
     return static_cast<float>(hum_tot) / 10.0;
 }
@@ -21,8 +21,8 @@ float readTemp()
 {
     uint8_t temp_high;
     uint8_t temp_low;
-    i2c_read_blocking(i2c_default, TEMP_HIGH, &temp_high, 8, true);
-    i2c_read_blocking(i2c_default, TEMP_LOW, &temp_low, 8, true);
+    i2c_read_blocking(i2c_default, TEMP_HIGH, &temp_high, 1, true);
+    i2c_read_blocking(i2c_default, TEMP_LOW, &temp_low, 1, true);
 
     if (temp_high & 0x80)
     {
@@ -49,6 +49,7 @@ int main()
         float curTemp = readTemp();
 
         std::cout << "AM2320 \t Temp: " << curTemp << " C \t Humidity: " << curHum << "%" << std::endl;
+        sleep_ms(1500);
     }
 
     return 0;
