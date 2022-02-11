@@ -11,9 +11,12 @@
 
 float readHum()
 {
-    uint16_t hum_tot;
-    i2c_read_blocking(i2c_default, HUM_HIGH, &hum_tot, 2, true);
+    uint8_t hum_high;
+    uint8_t hum_low;
+    i2c_read_blocking(i2c_default, HUM_HIGH, &hum_high, 1, true);
+    i2c_read_blocking(i2c_default, HUM_LOW, &hum_low, 1, true);
 
+    uint16_t hum_tot = (hum_high << 8) | hum_low;
     return static_cast<float>(hum_tot) / 10.0;
 }
 
