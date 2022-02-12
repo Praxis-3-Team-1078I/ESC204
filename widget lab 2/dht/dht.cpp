@@ -79,7 +79,7 @@ std::optional<dhtData> readData()
         data.temp *= -1;
     }
 
-    return std::make_optional(data);
+    return data;
 }
 
 int main()
