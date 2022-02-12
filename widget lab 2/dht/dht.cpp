@@ -2,6 +2,7 @@
 #include "pico/stdlib.h"
 #include <iomanip>
 #include <iostream>
+#include <optional>
 
 #define DHT_SDA 16
 #define DHT_SCL 17
@@ -35,7 +36,13 @@ uint16_t crc16(uint8_t *buffer, uint8_t nbytes)
     return crc;
 }
 
-bool readData(float *temp, float *hum)
+struct dhtData
+{
+    float temp;
+    float hum;
+};
+
+std::optional<dhtData> readData()
 {
     uint8_t buffer[8] = {0, 0, 0, 0, 0, 0, 0, 0};
 
@@ -52,28 +59,27 @@ bool readData(float *temp, float *hum)
 
     if (buffer[0] != 0x03 || buffer[1] != 0x04)
     {
-        return false;
+        return std::nullopt;
     }
 
     uint16_t the_crc = (buffer[7] << 8) | buffer[6];
     uint16_t calc_crc = crc16(buffer, 6);
     if (the_crc != calc_crc)
     {
-        return false;
+        return std::nullopt;
     }
 
     uint16_t tempData = (buffer[4] << 8) | buffer[5];
     uint16_t humData = (buffer[2] << 8) | buffer[3];
 
-    *temp = static_cast<float>(tempData & 0x7FFF) / 10.0;
-    *hum = static_cast<float>(humData) / 10.0;
+    dhtData data = {static_cast<float>(tempData & 0x7FFF) / 10, static_cast<float>(humData) / 10};
 
     if (tempData & 0x8000)
     {
-        *temp *= -1.0;
+        data.temp *= -1;
     }
 
-    return true;
+    return std::make_optional(data);
 }
 
 int main()
@@ -88,15 +94,12 @@ int main()
     gpio_set_function(DHT_SCL, GPIO_FUNC_I2C);
     gpio_pull_up(DHT_SCL);
 
-    float curTemp;
-    float curHum;
-
     while (true)
     {
-        if (readData(&curTemp, &curHum))
+        auto data = readData();
+        if (data)
         {
-
-            std::cout << "AM2320 \t Temp: " << curTemp << " C \t Humidity: " << curHum << "%" << std::endl;
+            std::cout << "AM2320 \t Temp: " << data->temp << " C \t Humidity: " << data->hum << "%" << std::endl;
         }
         else
         {
