@@ -1,7 +1,6 @@
 #include "hardware/pwm.h"
 #include "pico/stdlib.h"
 #include <limits>
-#include <string>
 
 #define BUZZER_PIN 16
 #define SYS_CLK_HZ 125000000.0f
