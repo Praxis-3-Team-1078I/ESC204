@@ -1,8 +1,6 @@
 #ifndef THREAD_HPP
 #define THREAD_HPP
 
-// since this is templated code, must write implementation here
-
 #include "pico/multicore.h"
 #include "pico/sync.h"
 #include <functional>
@@ -17,35 +15,19 @@ class Thread
     {
         std::function<void()> f;
         std::shared_ptr<bool> finished_ptr;
-        _callQueue_t(std::function<void()> _f, std::shared_ptr<bool> _finished_ptr)
-        {
-            f = _f;
-            finished_ptr = _finished_ptr;
-        }
+        _callQueue_t(std::function<void()> _f, std::shared_ptr<bool> _finished_ptr);
     };
 
     static bool _core1Started;
     static std::queue<_callQueue_t> _callQueue;
 
-    static void _core1_entry()
-    {
-        while (true)
-        {
-            while (_callQueue.empty())
-            {
-                tight_loop_contents();
-            }
-            _callQueue_t toDo = _callQueue.front();
-            std::invoke(toDo.f);
-            *(toDo.finished_ptr) = true;
-            _callQueue.pop();
-        }
-    }
+    static void _core1_entry();
 
     std::shared_ptr<bool> _finished_ptr = std::make_shared<bool>(false);
     bool _joinable = false;
 
   public:
+    // since this is templated code, must write implementation here
     template <class Callable, class... Args> Thread(Callable &&f, Args &&...args)
     {
         static_assert(std::is_invocable<typename std::decay<Callable>::type, typename std::decay<Args>::type...>::value,
@@ -62,44 +44,13 @@ class Thread
         _callQueue.push(_callQueue_t(binded_f, _finished_ptr));
     }
 
-    ~Thread()
-    {
-        if (_joinable)
-        {
-            std::terminate();
-        }
-    }
+    ~Thread();
 
-    bool joinable()
-    {
-        return _joinable;
-    }
+    bool joinable();
 
-    void join()
-    {
-        if (!_joinable)
-        {
-            std::terminate();
-        }
-        else if (multicore_fifo_rvalid())
-        {
-            std::terminate();
-        }
-        while (!(*_finished_ptr))
-        {
-            tight_loop_contents();
-        }
-        _joinable = false;
-    }
+    void join();
 
-    void detach()
-    {
-        if (!_joinable)
-        {
-            std::terminate();
-        }
-        _joinable = false;
-    }
+    void detach();
 };
 
 #endif
