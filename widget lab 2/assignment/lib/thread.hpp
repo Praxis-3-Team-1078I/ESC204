@@ -31,7 +31,7 @@ class Thread
     template <class Callable, class... Args> Thread(Callable &&f, Args &&...args)
     {
         static_assert(std::is_invocable<typename std::decay<Callable>::type, typename std::decay<Args>::type...>::value,
-                      "thread arguments must be invocable after conversion to rvalues");
+                      "Thread arguments must be invocable after conversion to rvalues");
 
         if (!_core1Started)
         {
