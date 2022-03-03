@@ -2,13 +2,15 @@
 #include "lib/pwm.hpp"
 #include "lib/thread.hpp"
 #include "pico/stdlib.h"
+#include "pico/time.h"
 #include <iomanip>
 #include <iostream>
 
+#define MOTOR_PIN 15
 #define DHT_SDA 16
 #define DHT_SCL 17
-
 #define BUZZER_PIN 18
+#define TIME_TILL_BEEP_MS 120000
 
 enum Status
 {
@@ -27,6 +29,7 @@ void buzzer_delegate()
     bool counting_up = true;
     uint16_t cur_duty = 0;
     uint16_t cur_freq = 50;
+    absolute_time_t time_to_buzz = make_timeout_time_ms(TIME_TILL_BEEP_MS);
 
     while (true)
     {
@@ -36,12 +39,13 @@ void buzzer_delegate()
         if (now_status != last_status)
         {
             // reset variables, we have changed modes
-            bool counting_up = true;
-            uint16_t curDuty = 0;
-            uint16_t cur_freq = 50;
+            counting_up = true;
+            cur_duty = 0;
+            cur_freq = 50;
+            time_to_buzz = make_timeout_time_ms(TIME_TILL_BEEP_MS);
         }
 
-        if (now_status == bad_temp)
+        if (now_status == bad_temp && absolute_time_diff_us(get_absolute_time(), time_to_buzz) < 0)
         {
             if (now_status != last_status)
             {
@@ -65,7 +69,7 @@ void buzzer_delegate()
                 counting_up = !(cur_duty > 0);
             }
         }
-        else if (now_status == bad_hum)
+        else if (now_status == bad_hum && absolute_time_diff_us(get_absolute_time(), time_to_buzz) < 0)
         {
             if (now_status != last_status)
             {
@@ -87,7 +91,7 @@ void buzzer_delegate()
                 counting_up = !(cur_freq > 50);
             }
         }
-        else if (now_status == bad_both)
+        else if (now_status == bad_both && absolute_time_diff_us(get_absolute_time(), time_to_buzz) < 0)
         {
             // solid beeping noise at loud volume and standard frequency
             if (now_status != last_status)
@@ -115,6 +119,7 @@ int main()
     std::cout << std::fixed << std::setprecision(1);
 
     init_dht(DHT_SDA, DHT_SCL);
+    config_pwm(MOTOR_PIN, 500, 0);
 
     // handle buzzer on other core as will need to constatntly change it
     // and don't want to interupt our polling of the sensor.
@@ -129,18 +134,22 @@ int main()
 
             if (data_bad_temp && data_bad_hum)
             {
+                set_duty_pwm(MOTOR_PIN, 60000);
                 cur_status = bad_both;
             }
             else if (data_bad_temp)
             {
+                set_duty_pwm(MOTOR_PIN, 60000);
                 cur_status = bad_temp;
             }
             else if (data_bad_hum)
             {
+                set_duty_pwm(MOTOR_PIN, 60000);
                 cur_status = bad_hum;
             }
             else
             {
+                set_duty_pwm(MOTOR_PIN, 0);
                 cur_status = good;
             }
 
