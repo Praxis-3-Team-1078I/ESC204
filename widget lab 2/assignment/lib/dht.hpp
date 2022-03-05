@@ -4,6 +4,7 @@
 #include "pico/stdlib.h"
 #include <optional>
 
+// struct to store return data from dht
 struct dht_data
 {
     float temp;
