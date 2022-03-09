@@ -11,7 +11,7 @@
 #define MOTOR_ENA_PIN 15
 #define DHT_SDA 16
 #define DHT_SCL 17
-#define BUZZER_PIN 18
+#define BUZZER_PIN 22
 #define TIME_TILL_BEEP_MS 20000
 
 enum Status
@@ -153,8 +153,8 @@ int main()
         if (auto data = read_data_dht())
         {
             // check if temp and hum are in acceptable ranges for plant growing
-            bool data_bad_temp = (*data).temp < 20 || (*data).temp > 30;
-            bool data_bad_hum = (*data).hum < 40 || (*data).hum > 80;
+            bool data_bad_temp = (*data).temp < 18 || (*data).temp > 24;
+            bool data_bad_hum = (*data).hum < 75 || (*data).hum > 85;
 
             if (data_bad_temp && data_bad_hum)
             {
