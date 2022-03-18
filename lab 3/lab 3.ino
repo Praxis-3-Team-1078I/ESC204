@@ -1,6 +1,13 @@
 #include "arduino_secrets.h"
 #include <WiFiNINA.h>
 
+#define M1ENA 2
+#define M1IN1 3
+#define M1IN2 4
+#define M2IN3 5
+#define M2IN4 6
+#define M2ENA 9
+
 WiFiServer server(80);
 
 enum Dir
@@ -15,6 +22,13 @@ Dir dir = none;
 
 void setup()
 {
+    pinMode(M1ENA, OUTPUT);
+    pinMode(M1IN1, OUTPUT);
+    pinMode(M1IN2, OUTPUT);
+    pinMode(M2IN3, OUTPUT);
+    pinMode(M2IN4, OUTPUT);
+    pinMode(M2ENA, OUTPUT);
+
     Serial.begin(9600);
     while (!Serial)
         ;
@@ -133,22 +147,48 @@ void loop()
                 if (currentLine.endsWith("GET /N"))
                 {
                     dir = N;
+                    digitalWrite(M1IN1, HIGH);
+                    digitalWrite(M1IN2, LOW);
+                    digitalWrite(M2IN3, HIGH);
+                    digitalWrite(M2IN4, LOW);
+                    analogWrite(M1ENA, 255);
+                    analogWrite(M2ENA, 255);
                 }
                 else if (currentLine.endsWith("GET /E"))
                 {
                     dir = E;
+                    digitalWrite(M1IN1, HIGH);
+                    digitalWrite(M1IN2, LOW);
+                    digitalWrite(M2IN3, LOW);
+                    digitalWrite(M2IN4, HIGH);
+                    analogWrite(M1ENA, 255);
+                    analogWrite(M2ENA, 255);
                 }
                 else if (currentLine.endsWith("GET /S"))
                 {
                     dir = S;
+                    digitalWrite(M1IN1, LOW);
+                    digitalWrite(M1IN2, HIGH);
+                    digitalWrite(M2IN3, LOW);
+                    digitalWrite(M2IN4, HIGH);
+                    analogWrite(M1ENA, 255);
+                    analogWrite(M2ENA, 255);
                 }
                 else if (currentLine.endsWith("GET /W"))
                 {
                     dir = W;
+                    digitalWrite(M1IN1, LOW);
+                    digitalWrite(M1IN2, HIGH);
+                    digitalWrite(M2IN3, HIGH);
+                    digitalWrite(M2IN4, LOW);
+                    analogWrite(M1ENA, 255);
+                    analogWrite(M2ENA, 255);
                 }
-                else if (currentLine.endsWith("GET /"))
+                else if (currentLine.endsWith("GET / "))
                 {
                     dir = none;
+                    analogWrite(M1ENA, 0);
+                    analogWrite(M2ENA, 0);
                 }
             }
         }
