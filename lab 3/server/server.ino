@@ -90,7 +90,7 @@ void setState(Request &req, Response &res)
         String tmp = (const char *)data["curDir"];
         if (tmp == "none" || tmp == "N" || tmp == "E" || tmp == "S" || tmp == "W")
         {
-            curDir == tmp;
+            curDir = tmp;
             handleStateChange(tmp);
         }
     }
