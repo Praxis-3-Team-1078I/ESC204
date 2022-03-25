@@ -48,25 +48,25 @@ function Buttons() {
             className={curSelected === "N" ? "selected" : "notSelected"}
             onClick={() => handleClick("N")}
           >
-            North
+            Forward
           </button>
           <button
             className={curSelected === "E" ? "selected" : "notSelected"}
             onClick={() => handleClick("E")}
           >
-            East
+            Right
           </button>
           <button
             className={curSelected === "S" ? "selected" : "notSelected"}
             onClick={() => handleClick("S")}
           >
-            South
+            Backward
           </button>
           <button
             className={curSelected === "W" ? "selected" : "notSelected"}
             onClick={() => handleClick("W")}
           >
-            West
+            Left
           </button>
         </>
       )}
