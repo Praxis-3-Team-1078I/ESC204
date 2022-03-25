@@ -22,37 +22,37 @@ void handleStateChange(String dir, double spd)
 {
     if (dir == "N")
     {
-        digitalWrite(M1IN1, HIGH);
-        digitalWrite(M1IN2, LOW);
-        digitalWrite(M2IN3, HIGH);
-        digitalWrite(M2IN4, LOW);
+        digitalWrite(M1IN1, LOW);
+        digitalWrite(M1IN2, HIGH);
+        digitalWrite(M2IN3, LOW);
+        digitalWrite(M2IN4, HIGH);
         analogWrite(M1ENA, 255 * spd);
         analogWrite(M2ENA, 255 * spd);
     }
     else if (dir == "E")
     {
-        digitalWrite(M1IN1, HIGH);
-        digitalWrite(M1IN2, LOW);
-        digitalWrite(M2IN3, LOW);
-        digitalWrite(M2IN4, HIGH);
+        digitalWrite(M1IN1, LOW);
+        digitalWrite(M1IN2, HIGH);
+        digitalWrite(M2IN3, HIGH);
+        digitalWrite(M2IN4, LOW);
         analogWrite(M1ENA, 255 * spd);
         analogWrite(M2ENA, 255 * spd);
     }
     else if (dir == "S")
     {
-        digitalWrite(M1IN1, LOW);
-        digitalWrite(M1IN2, HIGH);
-        digitalWrite(M2IN3, LOW);
-        digitalWrite(M2IN4, HIGH);
+        digitalWrite(M1IN1, HIGH);
+        digitalWrite(M1IN2, LOW);
+        digitalWrite(M2IN3, HIGH);
+        digitalWrite(M2IN4, LOW);
         analogWrite(M1ENA, 255 * spd);
         analogWrite(M2ENA, 255 * spd);
     }
     else if (dir == "W")
     {
-        digitalWrite(M1IN1, LOW);
-        digitalWrite(M1IN2, HIGH);
-        digitalWrite(M2IN3, HIGH);
-        digitalWrite(M2IN4, LOW);
+        digitalWrite(M1IN1, HIGH);
+        digitalWrite(M1IN2, LOW);
+        digitalWrite(M2IN3, LOW);
+        digitalWrite(M2IN4, HIGH);
         analogWrite(M1ENA, 255 * spd);
         analogWrite(M2ENA, 255 * spd);
     }
