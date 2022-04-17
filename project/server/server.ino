@@ -7,6 +7,8 @@
 #include <Arduino_JSON.h>
 #include <Servo.h>
 #include <WiFiNINA.h>
+#include <algorithm>
+#include <iterator>
 
 WiFiServer server(80);
 Application app;
@@ -46,6 +48,53 @@ WaterState curState = Unknown;
 
 void takeMeasurement()
 {
+    // rotate our servo
+    servo.write(45);
+    delay(500);
+    servo.write(0);
+
+    // rotate to color sensor
+    stepper.rotate(90);
+    delay(500);
+
+    // take reading
+    if (ams.dataReady())
+    {
+        ams.readCalibratedValues(calibratedValues);
+        size_t max_col =
+            std::distance(calibratedValues, std::max_element(calibratedValues, calibratedValues + AS726x_NUM_CHANNELS));
+        switch (max_col)
+        {
+        case AS726x_BLUE:
+            curState = Safe;
+            break;
+        case AS726x_RED:
+            curState = Contaminated;
+            break;
+        default:
+            curState = Unknown;
+        }
+    }
+    else
+    {
+        curState = Unknown;
+    }
+
+    Serial.print("Current state: ");
+    switch (curState)
+    {
+    case Safe:
+        Serial.println("Safe");
+        break;
+    case Contaminated:
+        Serial.println("Contaminated");
+        break;
+    default:
+        Serial.println("Unknown");
+    }
+
+    // rotate 1 test over
+    stepper.rotate(12);
 }
 
 void getWaterState(Request &req, Response &res)
